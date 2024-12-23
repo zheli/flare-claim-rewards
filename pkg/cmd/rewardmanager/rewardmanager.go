@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/shopspring/decimal"
 	"github.com/zheli/flare-claim-rewards/pkg/parser"
 )
 
@@ -34,7 +35,9 @@ func Claim(jsonFilePath string) (error) {
 
 	// print all reward claims
 	for i, claim := range rewardClaims {
-		log.Printf("Claim %d: Beneficiary: 0x%x", i, claim.Body.Beneficiary[:])
+		// there is 18 decimals in the amount, convert it to human readable format by dividing by 10^18 and keep all numbers after the decimal point
+		amountStr := decimal.NewFromBigInt(claim.Body.Amount, -18).String()
+		log.Printf("Claim %d: Beneficiary: 0x%x, Reward Amount: %s WFLRs", i, claim.Body.Beneficiary[:], amountStr)
 	}
 
 	return nil
