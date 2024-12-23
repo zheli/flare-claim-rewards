@@ -8,6 +8,16 @@
 *.so
 *.dylib
 
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+_output
+
 # Test binary, built with `go test -c`
 *.test
 
