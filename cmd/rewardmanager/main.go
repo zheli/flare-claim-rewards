@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/zheli/flare-ftso-v2-reward-claim/pkg/contracts"
 )
 
 func main() {
@@ -63,7 +64,7 @@ func main() {
 	auth.GasPrice = gasPrice
 
 	// Create contract instance
-	contract, err := NewRewardManager(contractAddress, client)
+	contract, err := contracts.NewRewardManager(contractAddress, client)
 	if err != nil {
 		log.Fatal(err)
 	}
