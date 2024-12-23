@@ -3,12 +3,15 @@ package main
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"fmt"
 	"log"
 	"math/big"
+	"os"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -19,18 +22,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Contract address - replace with your contract address
-	contractAddress := common.HexToAddress("YOUR_CONTRACT_ADDRESS")
+	// Contract address for mainnet
+	contractAddress := common.HexToAddress("0xC8f55c5aA2C752eE285Bd872855C749f4ee6239B")
 
-	// Your private key - replace with your private key
-	privateKey := "YOUR_PRIVATE_KEY"
-	
+	// Get private key from environment variable
+	privateKeyStr := os.Getenv("PRIVATE_KEY")
+	if privateKeyStr == "" {
+		log.Fatal("PRIVATE_KEY environment variable not set")
+	}
+
+	// Parse private key
+	privateKey, err := crypto.HexToECDSA(privateKeyStr)
+	if err != nil {
+		log.Fatal("Invalid private key:", err)
+	}
+
+	// Get chain ID
+	chainID, err := client.ChainID(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Create auth transaction
-	auth, err := bind.NewTransactorWithChainID(
-		strings.NewReader(privateKey),
-		password,
-		chainID,
-	)
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	if err != nil {
 		log.Fatal(err)
 	}
