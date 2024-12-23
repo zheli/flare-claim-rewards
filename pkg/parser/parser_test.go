@@ -2,6 +2,7 @@ package parser
 
 import (
 	"math/big"
+	"strings"
 	"testing"
 
 	eth "github.com/ethereum/go-ethereum/common"
@@ -15,7 +16,7 @@ const (
 
 func TestParseRewardDistributionData(t *testing.T) {
 	// Test input JSON
-	testJSON := []byte(`{
+	testJSON := `{
 		"rewardEpochId": 251,
 		"network": "flare",
 		"appliedMinConditions": false,
@@ -75,10 +76,11 @@ func TestParseRewardDistributionData(t *testing.T) {
 				}
 			}
 		]
-	}`)
+	}`
+	reader := strings.NewReader(testJSON)
 
 	// Parse the test data
-	claims, err := ParseRewardDistributionData(testJSON, testFTOSV1Wallet, testFTOSV2Identity)
+	claims, err := ParseRewardDistributionData(reader, testFTOSV1Wallet, testFTOSV2Identity)
 
 	// Assert no error occurred
 	assert.NoError(t, err)
@@ -105,7 +107,7 @@ func TestParseRewardDistributionData(t *testing.T) {
 func TestParseRewardDistributionData_InvalidJSON(t *testing.T) {
 	// Test with invalid JSON
 	invalidJSON := []byte(`{invalid json}`)
-	claims, err := ParseRewardDistributionData(invalidJSON, testFTOSV1Wallet, testFTOSV2Identity)
+	claims, err := ParseRewardDistributionData(strings.NewReader(string(invalidJSON)), testFTOSV1Wallet, testFTOSV2Identity)
 
 	// Assert error occurred and claims is nil
 	assert.Error(t, err)
