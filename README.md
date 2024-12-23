@@ -1,6 +1,12 @@
 # flare-claim-rewards
 This is a tool to claim rewards from the Flare Network FTSO V2.
 
+## Run script
+Set up .env file with FTSO_V1_WALLET and FTSO_V2_IDENTITY.
+```
+go run cmd/rewardmanager/main.go ./data/reward_claims.json
+```
+
 ## Set Up Development Environment
 
 ### Prerequisites
