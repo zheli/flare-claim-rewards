@@ -35,7 +35,7 @@ type RewardClaimBody struct {
 }
 
 // ParseRewardDistributionData parses a JSON string into RewardsV2InterfaceRewardClaimWithProof array
-func ParseRewardDistributionData(reader io.Reader, v1WalletAddress, v2WalletAddress eth.Address) ([]flareContracts.RewardsV2InterfaceRewardClaimWithProof, error) {
+func ParseRewardDistributionData(reader io.Reader, v1WalletAddress, v2WalletAddress eth.Address, v2RewardOnly bool) ([]flareContracts.RewardsV2InterfaceRewardClaimWithProof, error) {
 	// Parse JSON data into RewardDistributionData struct
 	var rewardData RewardDistributionData
 	if err := json.NewDecoder(reader).Decode(&rewardData); err != nil {
@@ -46,7 +46,7 @@ func ParseRewardDistributionData(reader io.Reader, v1WalletAddress, v2WalletAddr
 	var filteredClaims []flareContracts.RewardsV2InterfaceRewardClaimWithProof
 	log.Printf("Parsing %d claims", len(rewardData.RewardClaims))
 	for _, claim := range rewardData.RewardClaims {
-		if claim.Body.Beneficiary == v1WalletAddress || claim.Body.Beneficiary == v2WalletAddress {
+		if ((!v2RewardOnly && claim.Body.Beneficiary == v1WalletAddress) || claim.Body.Beneficiary == v2WalletAddress) {
 			merkleProof := make([][32]byte, 8)
 			for i, proof := range claim.MerkleProof {
 				merkleProof[i] = eth.HexToHash(proof)
