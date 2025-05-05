@@ -2,9 +2,14 @@
 This is a tool to claim rewards from the Flare Network FTSO V2.
 
 ## Run script
-Set up .env file with FTSO_V1_WALLET and FTSO_V2_IDENTITY.
+1. Clone Flare Rewards repository https://github.com/flare-foundation/fsp-rewards/tree/main
 ```
-go run cmd/rewardmanager/main.go ./data/reward_claims.json
+git clone https://github.com/flare-foundation/fsp-rewards.git ~/fsp-rewards
+```
+2. Set up .env file using env.example
+3. Run the script
+```
+go run cmd/rewardmanager/main.go ../fsp-rewards/flare/252/reward-distribution-data.json
 ```
 
 ## Set Up Development Environment
