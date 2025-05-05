@@ -20,7 +20,11 @@ build:
 
 # Run the application
 run:
-	$(GORUN) $(MAIN_PATH)
+	$(GORUN) $(MAIN_PATH) $(filter-out $@,$(MAKECMDGOALS))
+
+# Catch-all target to allow passing arguments
+%:
+	@:
 
 # Clean build files
 clean:

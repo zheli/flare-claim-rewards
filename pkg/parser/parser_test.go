@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	testFTOSV1Wallet   = "0x0000000000000000000000000000000000000001"
+	testFTOSV1Wallet   = "0x00000000000000000000000000000000000000D1"
 	testFTOSV2Identity = "0x0000000000000000000000000000000000000002"
 )
 
@@ -33,7 +33,7 @@ func TestParseRewardDistributionData(t *testing.T) {
 					"0xa05b5f8ef7ef0f9d6e0f0b6d47ba851fbd2de6193cde441c8ea757349312e16f"
 				],
 				"body": {
-					"beneficiary": "0x0000000000000000000000000000000000000001",
+					"beneficiary": "0x00000000000000000000000000000000000000d1",
 					"claimType": 0,
 					"amount": "403643555586096443338936",
 					"rewardEpochId": 251
@@ -75,7 +75,36 @@ func TestParseRewardDistributionData(t *testing.T) {
 					"rewardEpochId": 251
 				}
 			}
-		]
+		],
+		"noOfWeightBasedClaims": 158,
+		"merkleRoot": "0xc8e18f399cb4648f45cf39e19184d04c6c3a22fab369bf87568b4c40fd939554",
+		"abi": {
+			"components": [
+			{
+				"internalType": "uint24",
+				"name": "rewardEpochId",
+				"type": "uint24"
+			},
+			{
+				"internalType": "bytes20",
+				"name": "beneficiary",
+				"type": "bytes20"
+			},
+			{
+				"internalType": "uint120",
+				"name": "amount",
+				"type": "uint120"
+			},
+			{
+				"internalType": "enum RewardsV2Interface.ClaimType",
+				"name": "claimType",
+				"type": "uint8"
+			}
+			],
+			"internalType": "struct RewardsV2Interface.RewardClaim",
+			"name": "_claim",
+			"type": "tuple"
+		}
 	}`
 	reader := strings.NewReader(testJSON)
 
@@ -106,8 +135,8 @@ func TestParseRewardDistributionData(t *testing.T) {
 
 func TestParseRewardDistributionData_InvalidJSON(t *testing.T) {
 	// Test with invalid JSON
-	invalidJSON := []byte(`{invalid json}`)
-	claims, err := ParseRewardDistributionData(strings.NewReader(string(invalidJSON)), testFTOSV1Wallet, testFTOSV2Identity)
+	invalidJSON := `{invalid json}`
+	claims, err := ParseRewardDistributionData(strings.NewReader(invalidJSON), testFTOSV1Wallet, testFTOSV2Identity)
 
 	// Assert error occurred and claims is nil
 	assert.Error(t, err)

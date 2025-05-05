@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/big"
 
 	eth "github.com/ethereum/go-ethereum/common"
@@ -43,6 +44,7 @@ func ParseRewardDistributionData(reader io.Reader, v1Wallet, v2Identity string) 
 
 	// Filter claims for our addresses
 	var filteredClaims []flareContracts.RewardsV2InterfaceRewardClaimWithProof
+	log.Printf("Parsing %d claims", len(rewardData.RewardClaims))
 	for _, claim := range rewardData.RewardClaims {
 		if claim.Body.Beneficiary == eth.HexToAddress(v1Wallet) || claim.Body.Beneficiary == eth.HexToAddress(v2Identity) {
 			merkleProof := make([][32]byte, 8)
@@ -58,7 +60,7 @@ func ParseRewardDistributionData(reader io.Reader, v1Wallet, v2Identity string) 
 			filteredClaims = append(filteredClaims, flareContracts.RewardsV2InterfaceRewardClaimWithProof{
 				MerkleProof: merkleProof,
 				Body: flareContracts.RewardsV2InterfaceRewardClaim{
-					Beneficiary: [20]byte(claim.Body.Beneficiary),
+					Beneficiary: claim.Body.Beneficiary,
 					ClaimType: claim.Body.ClaimType,
 					Amount: amount,
 					RewardEpochId: claim.Body.RewardEpochId,
@@ -66,6 +68,7 @@ func ParseRewardDistributionData(reader io.Reader, v1Wallet, v2Identity string) 
 			})
 		}
 	}
+	log.Printf("Found %d claims", len(filteredClaims))
 
 	return filteredClaims, nil
 }
