@@ -1,3 +1,6 @@
+# flare-claim-rewards
+This is a tool to claim rewards from the Flare Network FTSO V2.
+
 ## Set Up Development Environment
 
 ### Prerequisites
