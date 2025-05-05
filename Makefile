@@ -1,6 +1,9 @@
 # Binary name
 BINARY_NAME=rewardmanager
 
+# Set BUILD_OUT_DIR to the directory where the built executable should be placed
+BUILD_OUT_DIR:=./_output
+
 # Go commands
 GOCMD=go
 GOBUILD=$(GOCMD) build
@@ -13,7 +16,7 @@ MAIN_PATH=./cmd/rewardmanager
 
 # Build the application
 build:
-	$(GOBUILD) -o $(BINARY_NAME) $(MAIN_PATH)
+	$(GOBUILD) -o $(BUILD_OUT_DIR)/$(BINARY_NAME) $(MAIN_PATH)
 
 # Run the application
 run:
@@ -22,7 +25,7 @@ run:
 # Clean build files
 clean:
 	$(GOCLEAN)
-	rm -f $(BINARY_NAME)
+	rm -f $(BUILD_OUT_DIR)/$(BINARY_NAME)
 
 # Run tests
 test:
