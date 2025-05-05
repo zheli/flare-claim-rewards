@@ -47,7 +47,7 @@ func ParseRewardDistributionData(reader io.Reader, v1WalletAddress, v2WalletAddr
 	log.Printf("Parsing %d claims", len(rewardData.RewardClaims))
 	for _, claim := range rewardData.RewardClaims {
 		if ((!v2RewardOnly && claim.Body.Beneficiary == v1WalletAddress) || claim.Body.Beneficiary == v2WalletAddress) {
-			merkleProof := make([][32]byte, 8)
+			merkleProof := make([][32]byte, len(claim.MerkleProof))
 			for i, proof := range claim.MerkleProof {
 				merkleProof[i] = eth.HexToHash(proof)
 			}
