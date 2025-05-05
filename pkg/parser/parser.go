@@ -3,11 +3,12 @@ package parser
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/big"
 
 	eth "github.com/ethereum/go-ethereum/common"
 
-	flareContracts "github.com/zheli/flare-ftso-v2-reward-claim/pkg/contracts"
+	flareContracts "github.com/zheli/flare-claim-rewards/pkg/contracts"
 )
 
 // define input data struct
@@ -33,17 +34,17 @@ type RewardClaimBody struct {
 }
 
 // ParseRewardDistributionData parses a JSON string into RewardsV2InterfaceRewardClaimWithProof array
-func ParseRewardDistributionData(data []byte, ftsoV1Wallet string, ftsoV2Identity string) ([]flareContracts.RewardsV2InterfaceRewardClaimWithProof, error) {
+func ParseRewardDistributionData(reader io.Reader, v1Wallet, v2Identity string) ([]flareContracts.RewardsV2InterfaceRewardClaimWithProof, error) {
 	// Parse JSON data into RewardDistributionData struct
 	var rewardData RewardDistributionData
-	if err := json.Unmarshal(data, &rewardData); err != nil {
+	if err := json.NewDecoder(reader).Decode(&rewardData); err != nil {
 		return nil, fmt.Errorf("failed to parse reward distribution data: %v", err)
 	}
 
 	// Filter claims for our addresses
 	var filteredClaims []flareContracts.RewardsV2InterfaceRewardClaimWithProof
 	for _, claim := range rewardData.RewardClaims {
-		if claim.Body.Beneficiary == eth.HexToAddress(ftsoV1Wallet) || claim.Body.Beneficiary == eth.HexToAddress(ftsoV2Identity) {
+		if claim.Body.Beneficiary == eth.HexToAddress(v1Wallet) || claim.Body.Beneficiary == eth.HexToAddress(v2Identity) {
 			merkleProof := make([][32]byte, 8)
 			for i, proof := range claim.MerkleProof {
 				merkleProof[i] = eth.HexToHash(proof)

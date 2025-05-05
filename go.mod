@@ -1,4 +1,4 @@
-module github.com/zheli/flare-ftso-v2-reward-claim
+module github.com/zheli/flare-claim-rewards
 
 go 1.21
 
