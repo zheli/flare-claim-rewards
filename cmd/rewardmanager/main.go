@@ -64,7 +64,7 @@ func main() {
 	auth.GasPrice = gasPrice
 
 	// Create contract instance
-	contract, err := contracts.NewRewardManager(contractAddress, client)
+	contract, err := NewRewardManager(contractAddress, client)
 	if err != nil {
 		log.Fatal(err)
 	}
