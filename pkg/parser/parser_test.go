@@ -109,7 +109,7 @@ func TestParseRewardDistributionData(t *testing.T) {
 	reader := strings.NewReader(testJSON)
 
 	// Parse the test data
-	claims, err := ParseRewardDistributionData(reader, testFTOSV1Wallet, testFTOSV2Identity)
+	claims, err := ParseRewardDistributionData(reader, eth.HexToAddress(testFTOSV1Wallet), eth.HexToAddress(testFTOSV2Identity))
 
 	// Assert no error occurred
 	assert.NoError(t, err)
@@ -136,7 +136,7 @@ func TestParseRewardDistributionData(t *testing.T) {
 func TestParseRewardDistributionData_InvalidJSON(t *testing.T) {
 	// Test with invalid JSON
 	invalidJSON := `{invalid json}`
-	claims, err := ParseRewardDistributionData(strings.NewReader(invalidJSON), testFTOSV1Wallet, testFTOSV2Identity)
+	claims, err := ParseRewardDistributionData(strings.NewReader(invalidJSON), eth.HexToAddress(testFTOSV1Wallet), eth.HexToAddress(testFTOSV2Identity))
 
 	// Assert error occurred and claims is nil
 	assert.Error(t, err)
