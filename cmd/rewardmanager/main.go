@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/zheli/flare-claim-rewards/pkg/cmd/rewardmanager"
 )
@@ -44,8 +45,10 @@ func main() {
 
 		err = rewardmanager.Claim(jsonFullPath)
 		if err != nil {
-			log.Fatal(err)
+			log.Println("Error claiming rewards for epoch", epoch, "from", jsonFullPath, "with error:", err, "continue to the next epoch")
 		}
+		// sleep for 3 second before the next claim
+		time.Sleep(3 * time.Second)
 	}
 
 }
