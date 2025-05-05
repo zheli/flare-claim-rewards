@@ -21,32 +21,32 @@ func SendClaimTx(ethClient *ethclient.Client, walletAddress common.Address, wall
 	// Get chain ID
 	chainID, err := ethClient.ChainID(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// Create auth transaction
 	auth, err := bind.NewKeyedTransactorWithChainID(walletPK, chainID)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// Create contract instance
 	contract, err := contracts.NewRewardManager(common.HexToAddress(rewardManagerAddress), ethClient)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	
 	// Get current nonce
 	nonce, err := ethClient.PendingNonceAt(context.Background(), auth.From)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	auth.Nonce = big.NewInt(int64(nonce))
 
 	// Set gas price
 	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	auth.GasPrice = gasPrice
 
@@ -61,7 +61,7 @@ func SendClaimTx(ethClient *ethclient.Client, walletAddress common.Address, wall
 		[]contracts.RewardsV2InterfaceRewardClaimWithProof{rewardClaim},
 	)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	log.Printf("Transaction sent: %s, see https://flare-explorer.flare.network/tx/%s\n", tx.Hash().Hex(), tx.Hash().Hex())
