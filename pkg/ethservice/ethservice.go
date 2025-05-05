@@ -2,11 +2,12 @@ package ethservice
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"log"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/zheli/flare-claim-rewards/pkg/contracts"
 )
@@ -16,13 +17,7 @@ const (
 )
 
 // SendClaimTx sends a claim transaction to the reward manager contract
-func SendClaimTx(ethClient *ethclient.Client, v2IdentityPKStr string, rewardRecipient common.Address, rewardClaims []contracts.RewardsV2InterfaceRewardClaimWithProof) (error) {
-	// Parse private key
-	v2IdentityPK, err := crypto.HexToECDSA(v2IdentityPKStr)
-	if err != nil {
-		log.Fatal("Invalid private key:", err)
-	}
-
+func SendClaimTx(ethClient *ethclient.Client, walletAddress common.Address, walletPK *ecdsa.PrivateKey, rewardRecipient common.Address, rewardClaim contracts.RewardsV2InterfaceRewardClaimWithProof) (error) {
 	// Get chain ID
 	chainID, err := ethClient.ChainID(context.Background())
 	if err != nil {
@@ -30,11 +25,10 @@ func SendClaimTx(ethClient *ethclient.Client, v2IdentityPKStr string, rewardReci
 	}
 
 	// Create auth transaction
-	auth, err := bind.NewKeyedTransactorWithChainID(v2IdentityPK, chainID)
+	auth, err := bind.NewKeyedTransactorWithChainID(walletPK, chainID)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	// Create contract instance
 	contract, err := contracts.NewRewardManager(common.HexToAddress(rewardManagerAddress), ethClient)
@@ -42,44 +36,35 @@ func SendClaimTx(ethClient *ethclient.Client, v2IdentityPKStr string, rewardReci
 		log.Fatal(err)
 	}
 	
-	for _, claim := range rewardClaims {
-		// Create CallOpts for simulation
-		transactOpts := &bind.TransactOpts{
-			From: auth.From,
-			Context: context.Background(),
-			NoSend: true,
-		}
-
-		// // Get current nonce
-		// nonce, err := ethClient.PendingNonceAt(context.Background(), auth.From)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		// auth.Nonce = big.NewInt(int64(nonce))
-
-		// // Set gas price
-		// gasPrice, err := ethClient.SuggestGasPrice(context.Background())
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		// auth.GasPrice = gasPrice
-
-		wrapToken := true
-
-		tx, err := contract.Claim(
-			transactOpts, 
-			claim.Body.Beneficiary, 
-			rewardRecipient, 
-			claim.Body.RewardEpochId, 
-			wrapToken, 
-			rewardClaims,
-		)
-		// tx, err := contract.Claim(auth, claim.Body.Beneficiary, claim.Body.Beneficiary, claim.Body.RewardEpochId, true, rewardClaims)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("Transaction sent: %s\n", tx.Hash().Hex())
+	// Get current nonce
+	nonce, err := ethClient.PendingNonceAt(context.Background(), auth.From)
+	if err != nil {
+		log.Fatal(err)
 	}
+	auth.Nonce = big.NewInt(int64(nonce))
+
+	// Set gas price
+	gasPrice, err := ethClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	auth.GasPrice = gasPrice
+
+	sendWrappedFlare := true
+
+	tx, err := contract.Claim(
+		auth, 
+		walletAddress, 
+		rewardRecipient, 
+		rewardClaim.Body.RewardEpochId, 
+		sendWrappedFlare, 
+		[]contracts.RewardsV2InterfaceRewardClaimWithProof{rewardClaim},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Transaction sent: %s, see https://flare-explorer.flare.network/tx/%s\n", tx.Hash().Hex(), tx.Hash().Hex())
 
 	return nil
 }
