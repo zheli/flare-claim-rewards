@@ -22,6 +22,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	v1Wallet := os.Getenv("FTSO_V1_WALLET")
+	v2Identity := os.Getenv("FTSO_V2_IDENTITY")
+
 	// Contract address for mainnet
 	contractAddress := common.HexToAddress("0xC8f55c5aA2C752eE285Bd872855C749f4ee6239B")
 
