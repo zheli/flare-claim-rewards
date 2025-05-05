@@ -9,7 +9,7 @@ git clone https://github.com/flare-foundation/fsp-rewards.git ~/fsp-rewards
 2. Set up .env file using env.example
 3. Run the script
 ```
-go run cmd/rewardmanager/main.go ../fsp-rewards/flare/252/reward-distribution-data.json
+go run cmd/rewardmanager/main.go ../fsp-rewards/flare {start_epoch} {end_epoch}
 ```
 
 ## Set Up Development Environment
