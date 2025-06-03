@@ -31,3 +31,6 @@ To run all tests in the parser package:
 ```
 go test ./pkg/parser
 ```
+
+## Roadmap
+[ ] Add CSV report support
