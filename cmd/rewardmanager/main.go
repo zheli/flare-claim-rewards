@@ -47,8 +47,8 @@ func main() {
 		if err != nil {
 			log.Println("Error claiming rewards for epoch", epoch, "from", jsonFullPath, "with error:", err, "continue to the next epoch")
 		}
-		// sleep for 3 second before the next claim
-		time.Sleep(3 * time.Second)
+
+		time.Sleep(10 * time.Second)
 	}
 
 }
